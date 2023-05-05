@@ -51,6 +51,7 @@
   color: #ffffff;
   padding: 10px;
   transition: transform 0.3s linear;
+  z-index: 999;
 }
 
 .error_visible {
