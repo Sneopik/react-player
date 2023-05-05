@@ -1,0 +1,43 @@
+.video-wrapper {
+  position: relative;
+  padding-top: 56.25%;
+}
+
+.video-wrapper:hover > .forward,
+.video-wrapper:hover > .backward {
+  opacity: 1;
+}
+
+.video {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #000000;
+}
+
+.fullscreen {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.forward,
+.backward {
+  position: absolute;
+  height: 60%;
+  top: 50%;
+  transform: translateY(-50%);
+  opacity: 0;
+  transition: opacity 0.3s linear;
+}
+
+.forward {
+  right: 0;
+}
+
+.backward {
+  left: 0;
+}
