@@ -3,6 +3,12 @@ import { RefObject, useEffect, useState } from 'react';
 
 import { getFileExtension } from '../utils/lib/getFileExtension';
 
+declare global {
+  interface Window {
+    resizeLag: any;
+  }
+}
+
 type Props = {
   element: RefObject<HTMLVideoElement>;
   videoUrl: string;
@@ -18,10 +24,13 @@ type HookReturnType = {
 
 export const usePlayer = ({ element, videoUrl }: Props): HookReturnType => {
   const [isShowFSBtn, setIsShowFSBtn] = useState<boolean>(false);
+  const [orientation, setOrientation] = useState<'landscape' | 'portrait'>('portrait');
 
   const hideFsBtn = () => {
     setIsShowFSBtn(false);
   };
+
+  const isLandscape = () => window.matchMedia('(orientation:landscape)').matches;
 
   useEffect(() => {
     if (element.current) {
@@ -51,23 +60,27 @@ export const usePlayer = ({ element, videoUrl }: Props): HookReturnType => {
     }
   };
 
-  const handleOrientation = () => {
-    if (!element) {
-      return;
-    }
-
-    if (window.screen.orientation.type.includes('landscape')) {
+  useEffect(() => {
+    if (orientation === 'landscape') {
       requestFullscreen();
     } else {
       setIsShowFSBtn(false);
     }
+  }, [orientation]);
+
+  const onWindowResize = () => {
+    clearTimeout(window.resizeLag);
+    window.resizeLag = setTimeout(() => {
+      delete window.resizeLag;
+      setOrientation(isLandscape() ? 'landscape' : 'portrait');
+    }, 200);
   };
 
   useEffect(() => {
     if (typeof window !== undefined) {
-      window.addEventListener('orientationchange', () => handleOrientation());
+      window.addEventListener('resize', () => onWindowResize());
 
-      return window.removeEventListener('orientationchange', () => handleOrientation());
+      return window.removeEventListener('resize', () => onWindowResize());
     }
   }, []);
 

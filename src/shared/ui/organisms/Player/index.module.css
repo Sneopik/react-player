@@ -27,7 +27,7 @@
 .forward,
 .backward {
   position: absolute;
-  height: 60%;
+  height: 30%;
   top: 50%;
   transform: translateY(-50%);
   opacity: 0;
