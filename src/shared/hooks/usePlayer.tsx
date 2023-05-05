@@ -7,6 +7,12 @@ declare global {
   interface Window {
     resizeLag?: NodeJS.Timeout;
   }
+
+  interface HTMLVideoElement {
+    mozRequestFullScreen(): Promise<void>;
+    webkitRequestFullscreen(): Promise<void>;
+    msRequestFullscreen(): Promise<void>;
+  }
 }
 
 type Props = {
@@ -92,9 +98,15 @@ export const usePlayer = ({ element, videoUrl }: Props): HookReturnType => {
       return;
     }
 
+    const request =
+      element.current.requestFullscreen() ||
+      element.current.webkitRequestFullscreen() ||
+      element.current.mozRequestFullScreen() ||
+      element.current.msRequestFullscreen();
+
     try {
       setError('');
-      await element.current.requestFullscreen();
+      await request;
     } catch (e) {
       setError('Unable to enter full screen mode. Use the native functionality');
     }
