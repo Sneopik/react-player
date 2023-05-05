@@ -1,6 +1,9 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import cx from 'classnames';
 
 import { usePlayer } from '@/shared/hooks/usePlayer';
+
+import { Error } from '../../atoms/Error';
 
 import css from './index.module.css';
 
@@ -10,24 +13,28 @@ type Props = {
 
 export const Player = ({ video }: Props) => {
   const playerRef = useRef<HTMLVideoElement>(null);
+  const [isErrorVisible, setIsErrorVisible] = useState<boolean>(false);
 
-  const { forwardHandler, backwardHandler, requestFs, hideFsBtn, isShowFSBtn } = usePlayer({
+  const { forwardHandler, backwardHandler, error } = usePlayer({
     element: playerRef,
     videoUrl: video,
   });
 
   useEffect(() => {
-    if (isShowFSBtn) {
-      setTimeout(() => hideFsBtn(), 5000);
+    if (error) {
+      setIsErrorVisible(true);
+      setTimeout(() => {
+        setIsErrorVisible(false);
+      }, 3000);
     }
-  }, [isShowFSBtn, hideFsBtn]);
+  }, [error]);
 
   if (!video) {
     return null;
   }
 
   return (
-    <div>
+    <>
       <div className={css['video-wrapper']}>
         <video className={css.video} controls playsInline ref={playerRef} />
         <button type="button" className={css.backward} onClick={backwardHandler}>
@@ -36,12 +43,13 @@ export const Player = ({ video }: Props) => {
         <button type="button" className={css.forward} onClick={forwardHandler}>
           Forward
         </button>
-        {isShowFSBtn ? (
-          <button className={css.fullscreen} type="button" onClick={requestFs}>
-            Fullscreen
-          </button>
-        ) : null}
       </div>
-    </div>
+      <Error
+        className={cx(css.error, {
+          [css.error_visible]: isErrorVisible,
+        })}
+        msg={error}
+      />
+    </>
   );
 };

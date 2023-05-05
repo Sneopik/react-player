@@ -4,6 +4,8 @@ declare const styles: {
   readonly "backward": string;
   readonly "video": string;
   readonly "fullscreen": string;
+  readonly "error": string;
+  readonly "error_visible": string;
 };
 export = styles;
 

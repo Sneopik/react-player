@@ -41,3 +41,18 @@
 .backward {
   left: 0;
 }
+
+.error {
+  position: fixed;
+  top: 10px;
+  left: 50%;
+  transform: translate(-50%, -200%);
+  background-color: #ff0000;
+  color: #ffffff;
+  padding: 10px;
+  transition: transform 0.3s linear;
+}
+
+.error_visible {
+  transform: translate(-50%, 0);
+}

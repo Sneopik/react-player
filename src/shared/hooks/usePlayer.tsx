@@ -5,7 +5,7 @@ import { getFileExtension } from '../utils/lib/getFileExtension';
 
 declare global {
   interface Window {
-    resizeLag: any;
+    resizeLag?: NodeJS.Timeout;
   }
 }
 
@@ -15,22 +15,17 @@ type Props = {
 };
 
 type HookReturnType = {
-  isShowFSBtn: boolean;
   forwardHandler: () => void;
   backwardHandler: () => void;
-  requestFs: () => void;
-  hideFsBtn: () => void;
+  error: string;
 };
 
 export const usePlayer = ({ element, videoUrl }: Props): HookReturnType => {
-  const [isShowFSBtn, setIsShowFSBtn] = useState<boolean>(false);
   const [orientation, setOrientation] = useState<'landscape' | 'portrait'>('portrait');
+  const [error, setError] = useState<string>('');
 
-  const hideFsBtn = () => {
-    setIsShowFSBtn(false);
-  };
-
-  const isLandscape = () => window.matchMedia('(orientation:landscape)').matches;
+  const isLandscape = () =>
+    window.matchMedia('(orientation: landscape) and (max-width: 900px)').matches;
 
   useEffect(() => {
     if (element.current) {
@@ -52,19 +47,16 @@ export const usePlayer = ({ element, videoUrl }: Props): HookReturnType => {
     }
 
     try {
-      setIsShowFSBtn(false);
+      setError('');
       await element.current.requestFullscreen();
     } catch (e) {
-      console.log(e);
-      setIsShowFSBtn(true);
+      setError('Unable to enter full screen mode. Use the native functionality');
     }
   };
 
   useEffect(() => {
     if (orientation === 'landscape') {
       requestFullscreen();
-    } else {
-      setIsShowFSBtn(false);
     }
   }, [orientation]);
 
@@ -97,10 +89,8 @@ export const usePlayer = ({ element, videoUrl }: Props): HookReturnType => {
   };
 
   return {
-    isShowFSBtn,
     forwardHandler,
     backwardHandler,
-    requestFs: requestFullscreen,
-    hideFsBtn,
+    error,
   };
 };
