@@ -3,11 +3,6 @@
   padding-top: 56.25%;
 }
 
-.video-wrapper:hover > .forward,
-.video-wrapper:hover > .backward {
-  opacity: 1;
-}
-
 .video {
   position: absolute;
   top: 0;
@@ -17,29 +12,15 @@
   background-color: #000000;
 }
 
-.fullscreen {
+.controls_visible {
+  opacity: 1;
+}
+
+.play {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-}
-
-.forward,
-.backward {
-  position: absolute;
-  height: 30%;
-  top: 50%;
-  transform: translateY(-50%);
-  opacity: 0;
-  transition: opacity 0.3s linear;
-}
-
-.forward {
-  right: 0;
-}
-
-.backward {
-  left: 0;
 }
 
 .error {
@@ -52,6 +33,7 @@
   padding: 10px;
   transition: transform 0.3s linear;
   z-index: 999;
+  text-align: center;
 }
 
 .error_visible {

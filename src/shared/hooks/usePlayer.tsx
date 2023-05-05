@@ -1,5 +1,5 @@
 import Hls from 'hls.js';
-import { RefObject, useEffect, useState } from 'react';
+import { ChangeEvent, RefObject, useEffect, useState } from 'react';
 
 import { getFileExtension } from '../utils/lib/getFileExtension';
 
@@ -17,15 +17,61 @@ type Props = {
 type HookReturnType = {
   forwardHandler: () => void;
   backwardHandler: () => void;
+  isPlaying: boolean;
+  togglePlay: () => void;
+  isMuted: boolean;
+  toggleMute: () => void;
+  progress: number;
+  onSeek: (e: ChangeEvent<HTMLInputElement>) => void;
+  onTimeUpdate: () => void;
+  fullscreenHandler: () => void;
   error: string;
 };
 
 export const usePlayer = ({ element, videoUrl }: Props): HookReturnType => {
   const [orientation, setOrientation] = useState<'landscape' | 'portrait'>('portrait');
+  const [isPlaying, setIsPlaying] = useState<boolean>(false);
+  const [isMuted, setIsMuted] = useState<boolean>(false);
+  const [progress, setProgress] = useState<number>(0);
   const [error, setError] = useState<string>('');
 
+  const togglePlay = () => {
+    setIsPlaying(!isPlaying);
+  };
+
+  useEffect(() => {
+    if (element.current) {
+      isPlaying ? element.current.play() : element.current.pause();
+    }
+  }, [isPlaying, element]);
+
+  const onTimeUpdate = () => {
+    if (element.current) {
+      const progress = (element.current.currentTime / element.current.duration) * 100;
+      setProgress(progress);
+    }
+  };
+
+  const onSeek = (e: ChangeEvent<HTMLInputElement>) => {
+    if (element.current) {
+      const newValue = Number(e.target.value);
+      element.current.currentTime = (element.current.duration / 100) * newValue;
+      setProgress(newValue);
+    }
+  };
+
+  const toggleMute = () => {
+    setIsMuted(!isMuted);
+  };
+
+  useEffect(() => {
+    if (element.current) {
+      isMuted ? (element.current.muted = true) : (element.current.muted = false);
+    }
+  }, [isMuted, element]);
+
   const isLandscape = () =>
-    window.matchMedia('(orientation: landscape) and (max-width: 900px)').matches;
+    window.matchMedia('(orientation: landscape) and (max-width: 1024px)').matches;
 
   useEffect(() => {
     if (element.current) {
@@ -91,6 +137,14 @@ export const usePlayer = ({ element, videoUrl }: Props): HookReturnType => {
   return {
     forwardHandler,
     backwardHandler,
+    isPlaying,
+    togglePlay,
+    isMuted,
+    toggleMute,
+    progress,
+    onSeek,
+    onTimeUpdate,
+    fullscreenHandler: requestFullscreen,
     error,
   };
 };
