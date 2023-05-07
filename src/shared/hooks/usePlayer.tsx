@@ -31,6 +31,7 @@ type HookReturnType = {
   onSeek: (e: ChangeEvent<HTMLInputElement>) => void;
   onTimeUpdate: () => void;
   fullscreenHandler: () => void;
+  isShowControls: boolean;
   error: string;
 };
 
@@ -40,6 +41,7 @@ export const usePlayer = ({ element, videoUrl }: Props): HookReturnType => {
   const [isMuted, setIsMuted] = useState<boolean>(false);
   const [progress, setProgress] = useState<number>(0);
   const [error, setError] = useState<string>('');
+  const [isShowControls, setIsShowControls] = useState<boolean>(false);
 
   const togglePlay = () => {
     setIsPlaying(!isPlaying);
@@ -108,6 +110,7 @@ export const usePlayer = ({ element, videoUrl }: Props): HookReturnType => {
       setError('');
       await request;
     } catch (e) {
+      setIsShowControls(true);
       setError('Unable to enter full screen mode. Use the native functionality');
     }
   };
@@ -126,9 +129,28 @@ export const usePlayer = ({ element, videoUrl }: Props): HookReturnType => {
     }, 200);
   };
 
+  const handleKeyClick = (e: KeyboardEvent) => {
+    if (e.key === ' ') {
+      togglePlay();
+    }
+
+    if (e.key.toLowerCase() === 'arrowright') {
+      forwardHandler();
+    }
+
+    if (e.key.toLowerCase() === 'arrowleft') {
+      backwardHandler();
+    }
+
+    if (e.key.toLowerCase() === 'f') {
+      requestFullscreen();
+    }
+  };
+
   useEffect(() => {
     if (typeof window !== undefined) {
       window.addEventListener('resize', () => onWindowResize());
+      window.addEventListener('keyup', handleKeyClick);
 
       return window.removeEventListener('resize', () => onWindowResize());
     }
@@ -157,6 +179,7 @@ export const usePlayer = ({ element, videoUrl }: Props): HookReturnType => {
     onSeek,
     onTimeUpdate,
     fullscreenHandler: requestFullscreen,
+    isShowControls,
     error,
   };
 };

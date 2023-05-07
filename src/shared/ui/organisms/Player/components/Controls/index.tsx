@@ -1,6 +1,12 @@
 import { ChangeEvent, ComponentProps } from 'react';
 import cx from 'classnames';
 
+import { PlayIcon } from '@/shared/ui/atoms/icons/PlayIcon';
+import { PauseIcon } from '@/shared/ui/atoms/icons/PauseIcon';
+import { MutedIcon } from '@/shared/ui/atoms/icons/MutedIcon';
+import { VolumeIcon } from '@/shared/ui/atoms/icons/VolumeIcon';
+import { FullscreenIcon } from '@/shared/ui/atoms/icons/FullscreenIcon';
+
 import css from './index.module.css';
 
 type Props = ComponentProps<'div'> & {
@@ -26,14 +32,14 @@ export const Controls = ({
 }: Props) => (
   <div className={cx(css.wrapper, className)} {...props}>
     <div className={css.controls}>
-      <button type="button" onClick={togglePlay}>
-        {isPlaying ? 'Pause' : 'Play'}
+      <button className={css.play} type="button" onClick={togglePlay}>
+        {isPlaying ? <PauseIcon /> : <PlayIcon />}
       </button>
-      <button type="button" onClick={toggleMute}>
-        {isMuted ? 'Unmute' : 'Mute'}
+      <button className={css.mute} type="button" onClick={toggleMute}>
+        {isMuted ? <MutedIcon /> : <VolumeIcon />}
       </button>
-      <button type="button" onClick={fullscreenHandler}>
-        Fullscreen
+      <button className={css.fullscreen} type="button" onClick={fullscreenHandler}>
+        <FullscreenIcon />
       </button>
     </div>
     <input

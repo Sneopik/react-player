@@ -6,6 +6,7 @@
   opacity: 0;
   transition: opacity 0.3s linear;
   padding: 16px;
+  backdrop-filter: blur(4px);
 }
 
 .wrapper:hover {
@@ -19,17 +20,41 @@
   margin-bottom: 8px;
 }
 
-.controls > button:nth-of-type(2) {
+.play,
+.mute,
+.fullscreen {
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: transparent;
+  color: #ffffff;
+}
+
+.mute {
   margin-left: 8px;
 }
 
-.controls > button:nth-of-type(3) {
+.fullscreen {
   margin-left: auto;
 }
 
 .progress {
   width: 100%;
   cursor: pointer;
+  -webkit-appearance: none;
+  background: #ffffff;
+  border-radius: 20px;
+  height: 8px;
+}
+
+.progress::-webkit-slider-thumb {
+  -webkit-appearance: none; /* Override default look */
+  appearance: none;
+  background-color: #ff0000;
+  height: 12px;
+  width: 8px;
 }
 
 @media (max-width: 1024px) {

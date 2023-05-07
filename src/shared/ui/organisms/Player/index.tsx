@@ -4,6 +4,7 @@ import cx from 'classnames';
 import { usePlayer } from '@/shared/hooks/usePlayer';
 
 import { Error } from '../../atoms/Error';
+import { PlayIcon } from '../../atoms/icons/PlayIcon';
 
 import { Controls } from './components/Controls';
 
@@ -32,6 +33,7 @@ export const Player = ({ video }: Props) => {
     progress,
     onSeek,
     fullscreenHandler,
+    isShowControls,
   } = usePlayer({
     element: playerRef,
     videoUrl: video,
@@ -50,7 +52,7 @@ export const Player = ({ video }: Props) => {
     }
   };
 
-  const doubleTouchHandler = (event: React.TouchEvent<HTMLDivElement>) => {
+  const handleMobileTouch = (event: React.TouchEvent<HTMLDivElement>) => {
     if (typeof window !== 'undefined' && playerRef.current) {
       const position = event.changedTouches[0].clientX;
       const playerPos = playerRef.current.getBoundingClientRect();
@@ -68,7 +70,7 @@ export const Player = ({ video }: Props) => {
       setLastClick(0);
       clearTimeout(waitingClick);
       setWaitingClick(null);
-      doubleTouchHandler(e);
+      handleMobileTouch(e);
     } else {
       setLastClick(e.timeStamp);
       setWaitingClick(
@@ -111,27 +113,32 @@ export const Player = ({ video }: Props) => {
         <video
           onTimeUpdate={onTimeUpdate}
           muted={isMuted}
+          controls={isShowControls}
           className={css.video}
           playsInline
           ref={playerRef}
         />
-        {!isPlaying ? (
-          <button className={css.play} type="button" onClick={togglePlay}>
-            Play
-          </button>
+        {!isShowControls ? (
+          <>
+            {!isPlaying ? (
+              <button className={css.play} type="button" onClick={togglePlay}>
+                <PlayIcon />
+              </button>
+            ) : null}
+            <Controls
+              isPlaying={isPlaying}
+              togglePlay={togglePlay}
+              isMuted={isMuted}
+              toggleMute={toggleMute}
+              progress={progress}
+              onSeek={onSeek}
+              fullscreenHandler={fullscreenHandler}
+              className={cx({
+                [css.controls_visible]: isVisibleControls,
+              })}
+            />
+          </>
         ) : null}
-        <Controls
-          isPlaying={isPlaying}
-          togglePlay={togglePlay}
-          isMuted={isMuted}
-          toggleMute={toggleMute}
-          progress={progress}
-          onSeek={onSeek}
-          fullscreenHandler={fullscreenHandler}
-          className={cx({
-            [css.controls_visible]: isVisibleControls,
-          })}
-        />
       </div>
       <Error
         className={cx(css.error, {
