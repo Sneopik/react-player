@@ -28,6 +28,7 @@ export const Player = ({ video }: Props) => {
     onTimeUpdate,
     error,
     togglePlay,
+    togglePause,
     isMuted,
     toggleMute,
     progress,
@@ -43,11 +44,17 @@ export const Player = ({ video }: Props) => {
     if (typeof window !== 'undefined' && playerRef.current) {
       const position = event.clientX;
       const playerPos = playerRef.current.getBoundingClientRect();
+      const playerCenter = (playerPos.width / 2) * 0.2;
 
-      if (position >= playerPos.left && position <= playerPos.width / 2) {
+      if (position >= playerPos.left && position <= playerPos.width / 2 - playerCenter / 2) {
         backwardHandler();
-      } else {
+      } else if (
+        position <= playerPos.right &&
+        position >= playerPos.width / 2 + playerCenter / 2
+      ) {
         forwardHandler();
+      } else {
+        fullscreenHandler();
       }
     }
   };
@@ -56,11 +63,17 @@ export const Player = ({ video }: Props) => {
     if (typeof window !== 'undefined' && playerRef.current) {
       const position = event.changedTouches[0].clientX;
       const playerPos = playerRef.current.getBoundingClientRect();
+      const playerCenter = (playerPos.width / 2) * 0.2;
 
-      if (position >= playerPos.left && position <= playerPos.width / 2) {
+      if (position >= playerPos.left && position <= playerPos.width / 2 - playerCenter / 2) {
         backwardHandler();
-      } else {
+      } else if (
+        position <= playerPos.right &&
+        position >= playerPos.width / 2 + playerCenter / 2
+      ) {
         forwardHandler();
+      } else {
+        fullscreenHandler();
       }
     }
   };
@@ -113,6 +126,8 @@ export const Player = ({ video }: Props) => {
         <video
           onTimeUpdate={onTimeUpdate}
           muted={isMuted}
+          onPlay={togglePlay}
+          onPause={togglePause}
           controls={isShowControls}
           className={css.video}
           playsInline
@@ -121,13 +136,18 @@ export const Player = ({ video }: Props) => {
         {!isShowControls ? (
           <>
             {!isPlaying ? (
-              <button className={css.play} type="button" onClick={togglePlay}>
+              <button
+                className={css.play}
+                type="button"
+                onClick={isPlaying ? togglePause : togglePlay}
+              >
                 <PlayIcon />
               </button>
             ) : null}
             <Controls
               isPlaying={isPlaying}
               togglePlay={togglePlay}
+              togglePause={togglePause}
               isMuted={isMuted}
               toggleMute={toggleMute}
               progress={progress}

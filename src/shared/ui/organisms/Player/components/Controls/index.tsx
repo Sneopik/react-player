@@ -12,6 +12,7 @@ import css from './index.module.css';
 type Props = ComponentProps<'div'> & {
   isPlaying: boolean;
   togglePlay: () => void;
+  togglePause: () => void;
   isMuted: boolean;
   toggleMute: () => void;
   progress: number;
@@ -22,6 +23,7 @@ type Props = ComponentProps<'div'> & {
 export const Controls = ({
   isPlaying,
   togglePlay,
+  togglePause,
   isMuted,
   toggleMute,
   className,
@@ -32,7 +34,7 @@ export const Controls = ({
 }: Props) => (
   <div className={cx(css.wrapper, className)} {...props}>
     <div className={css.controls}>
-      <button className={css.play} type="button" onClick={togglePlay}>
+      <button className={css.play} type="button" onClick={isPlaying ? togglePause : togglePlay}>
         {isPlaying ? <PauseIcon /> : <PlayIcon />}
       </button>
       <button className={css.mute} type="button" onClick={toggleMute}>

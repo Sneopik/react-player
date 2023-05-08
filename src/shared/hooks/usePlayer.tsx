@@ -25,6 +25,7 @@ type HookReturnType = {
   backwardHandler: () => void;
   isPlaying: boolean;
   togglePlay: () => void;
+  togglePause: () => void;
   isMuted: boolean;
   toggleMute: () => void;
   progress: number;
@@ -44,14 +45,18 @@ export const usePlayer = ({ element, videoUrl }: Props): HookReturnType => {
   const [isShowControls, setIsShowControls] = useState<boolean>(false);
 
   const togglePlay = () => {
-    setIsPlaying(!isPlaying);
+    if (element.current) {
+      setIsPlaying(true);
+      element.current.play();
+    }
   };
 
-  useEffect(() => {
+  const togglePause = () => {
     if (element.current) {
-      isPlaying ? element.current.play() : element.current.pause();
+      setIsPlaying(false);
+      element.current.pause();
     }
-  }, [isPlaying, element]);
+  };
 
   const onTimeUpdate = () => {
     if (element.current) {
@@ -100,15 +105,20 @@ export const usePlayer = ({ element, videoUrl }: Props): HookReturnType => {
       return;
     }
 
-    const request =
-      element.current.requestFullscreen() ||
-      element.current.webkitRequestFullscreen() ||
-      element.current.mozRequestFullScreen() ||
-      element.current.msRequestFullscreen();
-
     try {
       setError('');
-      await request;
+      if (element?.current.requestFullscreen) {
+        await element.current.requestFullscreen();
+      } else if (element?.current?.webkitRequestFullscreen) {
+        await element.current.webkitRequestFullscreen();
+      } else if (element?.current?.mozRequestFullScreen) {
+        await element.current.mozRequestFullScreen();
+      } else if (element?.current?.msRequestFullscreen) {
+        await element.current.msRequestFullscreen();
+      } else {
+        setIsShowControls(true);
+        setError('Unable to enter full screen mode. Use the native functionality');
+      }
     } catch (e) {
       setIsShowControls(true);
       setError('Unable to enter full screen mode. Use the native functionality');
@@ -118,6 +128,8 @@ export const usePlayer = ({ element, videoUrl }: Props): HookReturnType => {
   useEffect(() => {
     if (orientation === 'landscape') {
       requestFullscreen();
+    } else {
+      setIsShowControls(false);
     }
   }, [orientation]);
 
@@ -131,7 +143,7 @@ export const usePlayer = ({ element, videoUrl }: Props): HookReturnType => {
 
   const handleKeyClick = (e: KeyboardEvent) => {
     if (e.key === ' ') {
-      togglePlay();
+      !isPlaying ? togglePlay() : togglePause();
     }
 
     if (e.key.toLowerCase() === 'arrowright') {
@@ -173,6 +185,7 @@ export const usePlayer = ({ element, videoUrl }: Props): HookReturnType => {
     backwardHandler,
     isPlaying,
     togglePlay,
+    togglePause,
     isMuted,
     toggleMute,
     progress,
